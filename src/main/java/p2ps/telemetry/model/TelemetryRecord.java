@@ -28,6 +28,6 @@ public class TelemetryRecord {
 
     private Long timestamp;
 
-    @Indexed(expireAfter = "P3Y") //expires after 3 yeards
+    @Indexed(expireAfter = "94608000s") //expires after 3 yeards
     private Long serverReceivedTimestamp;
 }
