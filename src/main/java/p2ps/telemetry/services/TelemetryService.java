@@ -19,18 +19,18 @@ public class TelemetryService {
     public void processPing(TelemetryPingDTO pingDTO) {
         log.info("[SERVICE] Processing ping for the product: {}", pingDTO.getItemId());
 
-        TelemetryRecord record = new TelemetryRecord();
-        record.setDeviceId(pingDTO.getDeviceId());
-        record.setStoreId(pingDTO.getStoreId());
-        record.setItemId(pingDTO.getItemId());
-        record.setLat(pingDTO.getLat());
-        record.setLng(pingDTO.getLng());
-        record.setAccuracyMeters(pingDTO.getAccuracyMeters());
-        record.setTimestamp(pingDTO.getTimestamp());
-        record.setServerReceivedTimestamp(System.currentTimeMillis());
+        TelemetryRecord telemetryRecord = new TelemetryRecord();
+        telemetryRecord.setDeviceId(pingDTO.getDeviceId());
+        telemetryRecord.setStoreId(pingDTO.getStoreId());
+        telemetryRecord.setItemId(pingDTO.getItemId());
+        telemetryRecord.setLat(pingDTO.getLat());
+        telemetryRecord.setLng(pingDTO.getLng());
+        telemetryRecord.setAccuracyMeters(pingDTO.getAccuracyMeters());
+        telemetryRecord.setTimestamp(pingDTO.getTimestamp());
+        telemetryRecord.setServerReceivedTimestamp(System.currentTimeMillis());
 
         try {
-            telemetryRepository.save(record);
+            telemetryRepository.save(telemetryRecord);
             log.info("[SERVICE] Ping successfully saved for product: {}", pingDTO.getItemId());
         } catch (Exception e) {
             log.error("[SERVICE] Failed to save ping: {}", e.getMessage(), e);
