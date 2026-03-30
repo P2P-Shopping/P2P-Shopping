@@ -15,7 +15,7 @@ public class TelemetryService {
 
     private final TelemetryRepository telemetryRepository;
 
-    @Async
+    @Async("telemetryExecutor")
     public void processPing(TelemetryPingDTO pingDTO) {
         log.info("[SERVICE] Processing ping for the product: {}", pingDTO.getItemId());
 
