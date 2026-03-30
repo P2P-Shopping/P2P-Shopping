@@ -29,8 +29,11 @@ public class TelemetryService {
         record.setTimestamp(pingDTO.getTimestamp());
         record.setServerReceivedTimestamp(System.currentTimeMillis());
 
-        telemetryRepository.save(record);
-
-        log.info("[SERVICE] Ping successfully saved for product: {}", pingDTO.getItemId());
+        try {
+            telemetryRepository.save(record);
+            log.info("[SERVICE] Ping successfully saved for product: {}", pingDTO.getItemId());
+        } catch (Exception e) {
+            log.error("[SERVICE] Failed to save ping: {}", e.getMessage(), e);
+        }
     }
 }
