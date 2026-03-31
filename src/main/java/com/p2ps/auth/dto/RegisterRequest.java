@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 
-import jakarta.validation.constraints.*;
+
 import lombok.*;
 
 @Getter

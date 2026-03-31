@@ -1,7 +1,6 @@
 package com.p2ps.auth.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

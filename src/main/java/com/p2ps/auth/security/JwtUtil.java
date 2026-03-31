@@ -7,7 +7,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
-import java.nio.charset.StandardCharsets;
+
 
 import java.security.Key;
 import java.util.Date;
@@ -15,13 +15,13 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // 1. Spring injecteaza aici valoarea din application.properties (.env)
+    // se  injecteaza aici valoarea din application.properties (.env)
     @Value("${jwt.secret}")
     private String secretKeyString;
 
     private Key secretKey;
 
-    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24 ore
+    private static final long EXPIRATION_TIME = 1000L * 60 * 60 * 24; //24h
     @PostConstruct
     public void init() {
         this.secretKey = Keys.hmacShaKeyFor(secretKeyString.getBytes());

@@ -46,9 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
 
             // Authenticate if user is not already in the SecurityContext
-            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-
-                if (!jwtUtil.isTokenExpired(token)) {
+            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null && !jwtUtil.isTokenExpired(token)){
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userEmail, null, new ArrayList<>()
                     );
@@ -57,8 +55,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     // Set user as authenticated
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
-            }
-        } catch (Exception e) {
+
+        } catch (Exception _) {
             // Clear context if token is expired, malformed, or invalid
             SecurityContextHolder.clearContext();
         }
