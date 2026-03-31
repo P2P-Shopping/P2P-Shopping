@@ -6,7 +6,7 @@ package com.p2ps.dto;
  */
 public class ListUpdatePayload {
 
-    private String action;
+    private ActionType action;
     private String itemId;
     private String content;
 
@@ -16,14 +16,14 @@ public class ListUpdatePayload {
     public ListUpdatePayload() {}
 
     /**
-     * Gets the action type (e.g., "ADD", "DELETE", "UPDATE").
-     * @return the action string
+     * Gets the action type.
+     * @return the action type
      */
-    public String getAction() {
+    public ActionType getAction() {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(ActionType action) {
         this.action = action;
     }
 

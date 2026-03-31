@@ -6,15 +6,23 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.StompWebSocketEndpointRegistration;
 
+import java.lang.reflect.Field;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class WebSocketConfigTest {
 
     @Test
-    void registerStompEndpoints() {
+    void registerStompEndpoints() throws Exception {
         RoomSubscriptionInterceptor interceptor = mock(RoomSubscriptionInterceptor.class);
         WebSocketConfig config = new WebSocketConfig(interceptor);
+
+        String[] allowedOrigins = {"https://example.com"};
+        Field field = WebSocketConfig.class.getDeclaredField("allowedOrigins");
+        field.setAccessible(true);
+        field.set(config, allowedOrigins);
 
         StompEndpointRegistry registry = mock(StompEndpointRegistry.class);
         StompWebSocketEndpointRegistration reg = mock(StompWebSocketEndpointRegistration.class);
@@ -25,7 +33,7 @@ class WebSocketConfigTest {
         config.registerStompEndpoints(registry);
 
         verify(registry).addEndpoint("/ws");
-        verify(reg).setAllowedOriginPatterns((String[]) null); // value is not injected in pure unit test, so null
+        verify(reg).setAllowedOriginPatterns(allowedOrigins);
         verify(reg).withSockJS();
     }
 

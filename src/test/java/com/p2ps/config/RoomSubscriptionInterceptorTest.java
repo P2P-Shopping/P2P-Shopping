@@ -1,11 +1,16 @@
 package com.p2ps.config;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.MessageBuilder;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -44,9 +49,10 @@ class RoomSubscriptionInterceptorTest {
         assertEquals("Invalid List ID format", exception.getMessage());
     }
 
-    @Test
-    void preSend_OtherCommand_Passes() {
-        Message<?> message = createMessage(StompCommand.SEND, "/topic/list/invalid_ID!");
+    @ParameterizedTest(name = "command={0}, destination={1}")
+    @MethodSource("nonBlockingSubscriptions")
+    void preSend_NonBlockingSubscriptions_Pass(StompCommand command, String destination) {
+        Message<?> message = createMessage(command, destination);
         MessageChannel channel = mock(MessageChannel.class);
 
         Message<?> result = interceptor.preSend(message, channel);
@@ -54,24 +60,12 @@ class RoomSubscriptionInterceptorTest {
         assertSame(message, result);
     }
 
-    @Test
-    void preSend_NoDestination_Passes() {
-        Message<?> message = createMessage(StompCommand.SUBSCRIBE, null);
-        MessageChannel channel = mock(MessageChannel.class);
-
-        Message<?> result = interceptor.preSend(message, channel);
-
-        assertSame(message, result);
-    }
-
-    @Test
-    void preSend_OtherPrefix_Passes() {
-        Message<?> message = createMessage(StompCommand.SUBSCRIBE, "/topic/other/invalid_ID!");
-        MessageChannel channel = mock(MessageChannel.class);
-
-        Message<?> result = interceptor.preSend(message, channel);
-
-        assertSame(message, result);
+    static Stream<Arguments> nonBlockingSubscriptions() {
+        return Stream.of(
+                Arguments.of(StompCommand.SEND, "/topic/list/invalid_ID!"),
+                Arguments.of(StompCommand.SUBSCRIBE, null),
+                Arguments.of(StompCommand.SUBSCRIBE, "/topic/other/invalid_ID!")
+        );
     }
 }
 

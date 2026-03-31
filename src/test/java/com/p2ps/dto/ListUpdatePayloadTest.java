@@ -1,22 +1,40 @@
 package com.p2ps.dto;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ListUpdatePayloadTest {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Test
     void testGettersAndSetters() {
         ListUpdatePayload payload = new ListUpdatePayload();
 
-        payload.setAction("ADD");
-        assertEquals("ADD", payload.getAction());
+        payload.setAction(ActionType.ADD);
+        assertEquals(ActionType.ADD, payload.getAction());
 
         payload.setItemId("item-123");
         assertEquals("item-123", payload.getItemId());
 
         payload.setContent("Apples");
         assertEquals("Apples", payload.getContent());
+    }
+
+    @Test
+    void testJsonRoundTrip() throws Exception {
+        ListUpdatePayload original = new ListUpdatePayload();
+        original.setAction(ActionType.ADD);
+        original.setItemId("item-123");
+        original.setContent("Apples");
+
+        String json = objectMapper.writeValueAsString(original);
+        ListUpdatePayload deserialized = objectMapper.readValue(json, ListUpdatePayload.class);
+
+        assertEquals(original.getAction(), deserialized.getAction());
+        assertEquals(original.getItemId(), deserialized.getItemId());
+        assertEquals(original.getContent(), deserialized.getContent());
     }
 }
 
