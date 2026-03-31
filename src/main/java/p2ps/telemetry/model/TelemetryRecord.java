@@ -1,5 +1,6 @@
 package p2ps.telemetry.model;
 
+import java.time.Instant;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -28,6 +29,6 @@ public class TelemetryRecord {
 
     private Long timestamp;
 
-    @Indexed(expireAfter = "94608000s") //expires after 3 yeards
-    private Long serverReceivedTimestamp;
+    @Indexed(expireAfter = "94608000s") //expires after 3 years
+    private Instant serverReceivedTimestamp;
 }
