@@ -97,4 +97,19 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    void login_ShouldReturnUnauthorized_WhenCredentialsAreInvalid() throws Exception {
+        LoginRequest request = new LoginRequest();
+        request.setEmail("wrong@example.com");
+        request.setPassword("wrongpass");
+
+        when(authenticationManager.authenticate(any()))
+                .thenThrow(new org.springframework.security.authentication.BadCredentialsException("Bad credentials"));
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized()); // Aici verificam ca returneaza 401
+    }
 }
