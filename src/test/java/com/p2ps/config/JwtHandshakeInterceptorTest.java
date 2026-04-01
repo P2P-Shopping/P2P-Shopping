@@ -72,4 +72,52 @@ class JwtHandshakeInterceptorTest {
         verify(jwtAuthFilter, never()).authenticateToken(any());
         verify(response, never()).setStatusCode(any());
     }
+
+    @Test
+    void beforeHandshake_NullTokenWithFlagEnabled_Allows() {
+        JwtAuthFilter jwtAuthFilter = mock(JwtAuthFilter.class);
+        JwtHandshakeInterceptor interceptor = new JwtHandshakeInterceptor(jwtAuthFilter, true);
+        ServerHttpRequest request = mock(ServerHttpRequest.class);
+        ServerHttpResponse response = mock(ServerHttpResponse.class);
+        WebSocketHandler handler = mock(WebSocketHandler.class);
+        HashMap<String, Object> attributes = new HashMap<>();
+
+        when(request.getURI()).thenReturn(URI.create("https://example.com/ws"));
+
+        boolean allowed = interceptor.beforeHandshake(request, response, handler, attributes);
+
+        assertTrue(allowed);
+        assertNull(attributes.get(JwtHandshakeInterceptor.SESSION_TOKEN_ATTRIBUTE));
+        verify(jwtAuthFilter, never()).authenticateToken(any());
+    }
+
+    @Test
+    void beforeHandshake_BlankTokenWithFlagEnabled_Allows() {
+        JwtAuthFilter jwtAuthFilter = mock(JwtAuthFilter.class);
+        JwtHandshakeInterceptor interceptor = new JwtHandshakeInterceptor(jwtAuthFilter, true);
+        ServerHttpRequest request = mock(ServerHttpRequest.class);
+        ServerHttpResponse response = mock(ServerHttpResponse.class);
+        WebSocketHandler handler = mock(WebSocketHandler.class);
+        HashMap<String, Object> attributes = new HashMap<>();
+
+        when(request.getURI()).thenReturn(URI.create("https://example.com/ws?token="));
+
+        boolean allowed = interceptor.beforeHandshake(request, response, handler, attributes);
+
+        assertTrue(allowed);
+        assertNull(attributes.get(JwtHandshakeInterceptor.SESSION_TOKEN_ATTRIBUTE));
+        verify(jwtAuthFilter, never()).authenticateToken(any());
+    }
+
+    @Test
+    void afterHandshake_NoOp() {
+        JwtAuthFilter jwtAuthFilter = mock(JwtAuthFilter.class);
+        JwtHandshakeInterceptor interceptor = new JwtHandshakeInterceptor(jwtAuthFilter, true);
+        ServerHttpRequest request = mock(ServerHttpRequest.class);
+        ServerHttpResponse response = mock(ServerHttpResponse.class);
+        WebSocketHandler handler = mock(WebSocketHandler.class);
+
+        assertDoesNotThrow(() -> interceptor.afterHandshake(request, response, handler, new RuntimeException("test")));
+        assertDoesNotThrow(() -> interceptor.afterHandshake(request, response, handler, null));
+    }
 }

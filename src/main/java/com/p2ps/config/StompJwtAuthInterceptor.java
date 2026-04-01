@@ -8,7 +8,9 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -31,7 +33,8 @@ public class StompJwtAuthInterceptor implements ChannelInterceptor {
             UsernamePasswordAuthenticationToken authentication = resolveAuthentication(accessor);
 
             if (authentication != null) {
-                return org.springframework.messaging.support.MessageBuilder.fromMessage(message)
+                accessor.setUser(authentication);
+                return MessageBuilder.fromMessage(message)
                         .setHeader(SimpMessageHeaderAccessor.USER_HEADER, authentication)
                         .build();
             }
@@ -44,7 +47,15 @@ public class StompJwtAuthInterceptor implements ChannelInterceptor {
 
     private UsernamePasswordAuthenticationToken resolveAuthentication(StompHeaderAccessor accessor) {
         String token = resolveToken(accessor);
-        return jwtAuthFilter.authenticateToken(token);
+        if (token == null) {
+            return null;
+        }
+
+        UsernamePasswordAuthenticationToken authentication = jwtAuthFilter.authenticateToken(token);
+        if (authentication == null) {
+            throw new BadCredentialsException("Invalid JWT token");
+        }
+        return authentication;
     }
 
     private String resolveToken(StompHeaderAccessor accessor) {
