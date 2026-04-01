@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest(properties = {
-        "jwt.secret=test-secret-key-care-trebuie-sa-fie-foarte-lunga-32-chars",
+        "jwt.secret=test-secret-key-care-trebuie-sa-fiefnkfjsfdssfffffffffffffiejwroiwjeoiraaaoiiojreijfierjfrengjkrengfdrnjkger-foarte-lunga-32-chars",
         "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
         "spring.datasource.driver-class-name=org.h2.Driver",
         "spring.datasource.username=sa",
@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class JwtUtilTest {
 
     private JwtUtil jwtUtil;
-    private final String secret = "v8yB2p5x8A/D?G-KaPdSgVkYp3s6v9y$B&E)H+MbQeThWmZq4t7w!z%C*F-JaNcR";
+    private final String secret = "v8yB2p5xhfsbfbhjsbdvfhbjhfdgyurgygfeugfrfdrreyfbrdfbhdbfhdfbhrdbfhrsbfsgfiufzikdhfuisdzfuhiusdhfddddddddddddddddddddddddddddddddddhrfuv8A/D?G-KaPdSgVkYp3s6v9y$B&E)H+MbQeThWmZq4t7w!z%C*F-JaNcR";
 
     @BeforeEach
     void setUp() {

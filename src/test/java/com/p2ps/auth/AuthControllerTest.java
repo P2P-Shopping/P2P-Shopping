@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
-        "jwt.secret=test-secret-key-care-trebuie-sa-fie-foarte-lunga-32-chars",
+        "jwt.secret=test-secret-key-care-trebuie-sgdughghfyufdhgisjaLEWjroihesiutheroijgtrhyjktrnhjgdfngui54y645t785htguh3uhath4ruhtrsdnfkjzrenrwewnfwekwa-fie-foarte-lunga-32-chars",
         "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
         "spring.datasource.driver-class-name=org.h2.Driver",
         "spring.datasource.username=sa",
