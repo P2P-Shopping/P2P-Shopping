@@ -24,8 +24,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        return path.startsWith("/ws");
+        String path = request.getServletPath();
+        return path.equals("/ws") || path.startsWith("/ws/");
     }
 
     public String extractBearerToken(String authorizationHeader) {
@@ -72,8 +72,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (authToken != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-            } else if (token != null) {
-                SecurityContextHolder.clearContext();
             }
         } catch (Exception _) {
             SecurityContextHolder.clearContext();

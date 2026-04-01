@@ -7,7 +7,6 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.util.List;
@@ -42,14 +41,21 @@ class StompJwtAuthInterceptorTest {
     }
 
     @Test
-    void preSend_ConnectWithoutTokenFails() {
+    void preSend_ConnectWithoutTokenPassesThrough() {
         JwtAuthFilter jwtAuthFilter = mock(JwtAuthFilter.class);
         StompJwtAuthInterceptor interceptor = new StompJwtAuthInterceptor(jwtAuthFilter);
         StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECT);
+        accessor.setLeaveMutable(true);
+        accessor.setSessionAttributes(new HashMap<>());
         Message<?> message = MessageBuilder.createMessage(new byte[0], accessor.getMessageHeaders());
         MessageChannel channel = mock(MessageChannel.class);
 
-        assertThrows(AccessDeniedException.class, () -> interceptor.preSend(message, channel));
+        when(jwtAuthFilter.authenticateToken(null)).thenReturn(null);
+
+        Message<?> result = interceptor.preSend(message, channel);
+
+        assertNotNull(result);
+        assertNull(StompHeaderAccessor.wrap(result).getUser());
     }
 
     @Test

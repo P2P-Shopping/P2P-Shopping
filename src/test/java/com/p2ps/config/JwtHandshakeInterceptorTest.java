@@ -18,7 +18,7 @@ class JwtHandshakeInterceptorTest {
     @Test
     void beforeHandshake_AllowsValidQueryToken() {
         JwtAuthFilter jwtAuthFilter = mock(JwtAuthFilter.class);
-        JwtHandshakeInterceptor interceptor = new JwtHandshakeInterceptor(jwtAuthFilter);
+        JwtHandshakeInterceptor interceptor = new JwtHandshakeInterceptor(jwtAuthFilter, true);
         ServerHttpRequest request = mock(ServerHttpRequest.class);
         ServerHttpResponse response = mock(ServerHttpResponse.class);
         WebSocketHandler handler = mock(WebSocketHandler.class);
@@ -38,7 +38,7 @@ class JwtHandshakeInterceptorTest {
     @Test
     void beforeHandshake_RejectsInvalidQueryToken() {
         JwtAuthFilter jwtAuthFilter = mock(JwtAuthFilter.class);
-        JwtHandshakeInterceptor interceptor = new JwtHandshakeInterceptor(jwtAuthFilter);
+        JwtHandshakeInterceptor interceptor = new JwtHandshakeInterceptor(jwtAuthFilter, true);
         ServerHttpRequest request = mock(ServerHttpRequest.class);
         ServerHttpResponse response = mock(ServerHttpResponse.class);
         WebSocketHandler handler = mock(WebSocketHandler.class);
@@ -52,5 +52,24 @@ class JwtHandshakeInterceptorTest {
 
         assertFalse(allowed);
         verify(response).setStatusCode(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void beforeHandshake_SkipsUrlTokenWhenFlagDisabled() {
+        JwtAuthFilter jwtAuthFilter = mock(JwtAuthFilter.class);
+        JwtHandshakeInterceptor interceptor = new JwtHandshakeInterceptor(jwtAuthFilter, false);
+        ServerHttpRequest request = mock(ServerHttpRequest.class);
+        ServerHttpResponse response = mock(ServerHttpResponse.class);
+        WebSocketHandler handler = mock(WebSocketHandler.class);
+        HashMap<String, Object> attributes = new HashMap<>();
+
+        when(request.getURI()).thenReturn(URI.create("https://example.com/ws?token=some-token"));
+
+        boolean allowed = interceptor.beforeHandshake(request, response, handler, attributes);
+
+        assertTrue(allowed);
+        assertNull(attributes.get(JwtHandshakeInterceptor.SESSION_TOKEN_ATTRIBUTE));
+        verify(jwtAuthFilter, never()).authenticateToken(any());
+        verify(response, never()).setStatusCode(any());
     }
 }

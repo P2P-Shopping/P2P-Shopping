@@ -2,25 +2,19 @@ package com.p2ps.config;
 
 import com.p2ps.auth.security.JwtAuthFilter;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 @Component
 public class StompJwtAuthInterceptor implements ChannelInterceptor {
-
-    private static final Logger logger = LoggerFactory.getLogger(StompJwtAuthInterceptor.class);
 
     private final JwtAuthFilter jwtAuthFilter;
 
@@ -36,16 +30,13 @@ public class StompJwtAuthInterceptor implements ChannelInterceptor {
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             UsernamePasswordAuthenticationToken authentication = resolveAuthentication(accessor);
 
-            if (authentication == null) {
-                SecurityContextHolder.clearContext();
-                logger.warn("Rejecting websocket CONNECT without a valid JWT");
-                throw new AccessDeniedException("WebSocket JWT authentication failed");
+            if (authentication != null) {
+                return org.springframework.messaging.support.MessageBuilder.fromMessage(message)
+                        .setHeader(SimpMessageHeaderAccessor.USER_HEADER, authentication)
+                        .build();
             }
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            return org.springframework.messaging.support.MessageBuilder.fromMessage(message)
-                    .setHeader(SimpMessageHeaderAccessor.USER_HEADER, authentication)
-                    .build();
+            return message;
         }
 
         return message;

@@ -3,6 +3,7 @@ package com.p2ps.config;
 import com.p2ps.auth.security.JwtAuthFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -21,14 +22,21 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(JwtHandshakeInterceptor.class);
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final boolean enableUrlToken;
 
-    public JwtHandshakeInterceptor(JwtAuthFilter jwtAuthFilter) {
+    public JwtHandshakeInterceptor(JwtAuthFilter jwtAuthFilter,
+                                   @Value("${websocket.compatibility.enableUrlToken:false}") boolean enableUrlToken) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.enableUrlToken = enableUrlToken;
     }
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                    Map<String, Object> attributes) {
+        if (!enableUrlToken) {
+            return true;
+        }
+
         String token = UriComponentsBuilder.fromUri(request.getURI())
                 .build()
                 .getQueryParams()
