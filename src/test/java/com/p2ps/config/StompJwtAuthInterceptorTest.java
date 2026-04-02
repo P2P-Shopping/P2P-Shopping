@@ -103,6 +103,8 @@ class StompJwtAuthInterceptorTest {
 
             assertSame(message, result, "Expected same message for " + command);
         }
+
+        verify(jwtAuthFilter, never()).authenticateToken(any());
     }
 
     @Test
